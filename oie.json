@@ -1,10 +1,13 @@
 {
     "schemaVersion": 1,
     "id": "oie-source-code-search",
-    "name": "Source Code Search",
-    "description": "Grep-like search across channel scripts, code templates, global scripts, message templates, and connector properties — from the Administrator UI.",
+    "name": "源码搜索",
+    "description": "在管理界面中对通道脚本、代码模板、全局脚本、消息模板和连接器属性进行类 grep 搜索。",
     "type": "plugin",
-    "ui": ["web", "swing"],
+    "ui": [
+        "web",
+        "swing"
+    ],
     "version": "1.4.1",
     "minEngineVersion": "4.6.0",
     "maxEngineVersion": null,
@@ -14,7 +17,16 @@
     "documentation": "https://github.com/diridium-com/oie-source-code-search#readme",
     "storeDocs": "docs/store.md",
     "license": "MPL-2.0",
-    "authors": ["Diridium Technologies Inc."],
-    "keywords": ["search", "grep", "scripts", "code-templates", "developer", "productivity"],
+    "authors": [
+        "Diridium Technologies Inc."
+    ],
+    "keywords": [
+        "search",
+        "grep",
+        "scripts",
+        "code-templates",
+        "developer",
+        "productivity"
+    ],
     "deprecated": false
 }

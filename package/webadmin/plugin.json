@@ -1,8 +1,10 @@
 {
     "id": "source-code-search",
-    "name": "Source Code Search",
+    "name": "源码搜索",
     "version": "1.4.1",
     "author": "Diridium Technologies Inc.",
-    "description": "Search across channel scripts, code templates, global scripts, message templates, and connector properties.",
-    "client": { "entry": "web/plugin.js" }
+    "description": "在通道脚本、代码模板、全局脚本、消息模板和连接器属性中搜索。",
+    "client": {
+        "entry": "web/plugin.js"
+    }
 }

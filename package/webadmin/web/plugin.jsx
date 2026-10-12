@@ -76,8 +76,8 @@ export function register(platform) {
     function restrictedSuffix(env) {
         if (!env || String(env.restricted) !== 'true') return '';
         const skipped = asInt(env.skippedChannelCount);
-        return ' Results are limited by your role'
-            + (skipped > 0 ? ' (' + skipped + (skipped === 1 ? ' channel' : ' channels') + ' not searched).' : '.');
+        return ' 结果受角色权限限制'
+            + (skipped > 0 ? ' (' + skipped + (skipped === 1 ? ' 个通道' : ' 个通道') + ' 未被搜索）。' : '.');
     }
 
     /* XStream JSON wraps scalars ({"int": 5}) and the api client unwraps
@@ -259,7 +259,7 @@ export function register(platform) {
                 rows = (await api.channels.list()).map(normalizeChannel).filter(Boolean);
             } catch (e) {
                 setChannels([]);
-                toast('Failed to load channels: ' + e.message, 'error');
+                toast('加载通道失败：' + e.message, 'error');
                 return;
             }
             setChannels(rows);
@@ -306,7 +306,7 @@ export function register(platform) {
             setNotInstalledStatus(httpStatus);
             if (!warnedRef.current) {
                 warnedRef.current = true;
-                toast('OIE Source Code Search engine plugin is not installed on this engine', 'warn');
+                toast('此引擎上未安装 OIE 源码搜索引擎插件', 'warn');
             }
         }
 
@@ -365,15 +365,15 @@ export function register(platform) {
             const params = gatherParams();
             if (!params.query) { queryInputRef.current && queryInputRef.current.focus(); return; }
             if (scope === 'selected' && !selectedIds.size) {
-                toast('Select at least one channel, or search all channels', 'warn');
+                toast('请至少选择一个通道，或搜索所有通道', 'warn');
                 return;
             }
 
             searchingRef.current = true;
             setSearching(true);
             setResults(null);
-            setStatus('Counting matches…');
-            setResultsState({ kind: 'loading', text: 'Counting matches…' });
+            setStatus('正在统计匹配项…');
+            setResultsState({ kind: 'loading', text: '正在统计匹配项…' });
 
             try {
                 // Phase 1: count (query string params match the servlet exactly).
@@ -384,24 +384,24 @@ export function register(platform) {
 
                 if (matchCount === 0) {
                     const suffix = restrictedSuffix(countEnv);
-                    setStatus('No matches found.' + suffix);
-                    setResultsState({ kind: 'hint', text: 'No matches found.' + suffix });
+                    setStatus('未找到匹配项。' + suffix);
+                    setResultsState({ kind: 'hint', text: '未找到匹配项。' + suffix });
                     return;
                 }
                 if (matchCount >= RESULT_WARNING_THRESHOLD) {
-                    const go = await confirmDialog('Large Result Set',
-                        'Found ' + matchCount + ' matches. This may take a moment to display. '
-                        + 'Continue, or refine your search?', { okLabel: 'Continue' });
+                    const go = await confirmDialog('大量结果集',
+                        '找到 ' + matchCount + ' 个匹配项。显示可能需要一些时间。'
+                        + '继续，还是细化搜索条件？', { okLabel: '继续' });
                     if (!go) {
-                        setStatus(matchCount + ' matches found. Search cancelled.');
-                        setResultsState({ kind: 'hint', text: 'Search cancelled.' });
+                        setStatus(matchCount + ' 个匹配项。搜索已取消。');
+                        setResultsState({ kind: 'hint', text: '搜索已取消。' });
                         return;
                     }
                 }
 
                 // Phase 2: full results.
-                setStatus('Searching…');
-                setResultsState({ kind: 'loading', text: 'Searching…' });
+                setStatus('正在搜索…');
+                setResultsState({ kind: 'loading', text: '正在搜索…' });
                 const searchRaw = await api.get(EXT + '/search', params);
                 const searchEnv = parseEnvelope(searchRaw);
                 const raw = searchEnv
@@ -416,25 +416,25 @@ export function register(platform) {
                 const artifactCount = new Set(matches.map(m =>
                     m.groupType + ':' + (m.channelId || m.channelName))).size;
                 setStatus(matches.length
-                    + (matches.length === 1 ? ' match' : ' matches') + ' in '
-                    + artifactCount + (artifactCount === 1 ? ' artifact' : ' artifacts') + '.'
+                    + (matches.length === 1 ? ' 个匹配，涉及 ' : ' 个匹配，涉及 ')
+                    + artifactCount + (artifactCount === 1 ? ' 个对象。' : ' 个对象。')
                     + restrictedSuffix(searchEnv));
                 setResultsState({ kind: 'results', matches, params });
             } catch (e) {
                 if (e && e.status === 403) {
                     const denied = 'You do not have the "Search Source Code" permission. '
-                        + 'Ask an administrator to grant it to your role.';
-                    setStatus('Permission denied.');
+                        + '请联系管理员将此权限授予您的角色。';
+                    setStatus('权限被拒绝。');
                     setResultsState({ kind: 'hint', text: denied });
                     toast(denied, 'warn');
                     return;
                 }
-                setResultsState({ kind: 'hint', text: 'Search failed: ' + e.message });
-                setStatus('Search failed.');
+                setResultsState({ kind: 'hint', text: '搜索失败：' + e.message });
+                setStatus('搜索失败。');
                 if (notInstalled(e)) {
                     showNotInstalled(e.status);
                 } else {
-                    toast('Search failed: ' + e.message, 'error');
+                    toast('搜索失败：' + e.message, 'error');
                 }
             } finally {
                 searchingRef.current = false;
@@ -448,9 +448,9 @@ export function register(platform) {
             const target = matchTarget(m);
             return (
                 <div className="flex gap-[12px] py-[2px] px-[8px] ml-[22px] cursor-pointer rounded-[3px] font-mono text-[12px] items-baseline hover:bg-accent-glow"
-                    title={target ? 'Open ' + target : null}
+                    title={target ? '打开 ' + target : null}
                     onClick={target ? () => platform.router.navigate(target) : null}>
-                    <span className="text-text-faint min-w-[70px] flex-none text-right">{'Line ' + m.lineNumber}</span>
+                    <span className="text-text-faint min-w-[70px] flex-none text-right">{'第 ' + m.lineNumber + ' 行'}</span>
                     <HighlightedLine text={m.lineText} re={re} />
                 </div>
             );
@@ -476,7 +476,7 @@ export function register(platform) {
                     <summary className="cursor-pointer py-[3px] px-[4px] rounded-[3px] hover:bg-accent-glow">
                         {label}
                         <span className="text-text-faint ml-[8px] text-[11px]">
-                            {items.length + (items.length === 1 ? ' match' : ' matches')}
+                            {items.length + (items.length === 1 ? ' 个匹配' : ' 个匹配')}
                         </span>
                     </summary>
                     {children}
@@ -488,7 +488,7 @@ export function register(platform) {
             if (resultsState.kind === 'idle') {
                 return (
                     <div className="hint">
-                        Enter a search and press Search. Click a match to open it in the matching editor.
+                        输入搜索内容并按下搜索按钮。点击匹配项可在对应编辑器中打开。
                     </div>
                 );
             }
@@ -524,7 +524,7 @@ export function register(platform) {
                 }
                 panels.push(
                     <div className="panel" key="channels">
-                        <div className="panel-header">{'Channels — ' + channelMatches.length + ' matches'}</div>
+                        <div className="panel-header">{'通道 — ' + channelMatches.length + ' 个匹配'}</div>
                         <div className="panel-body">{groups}</div>
                     </div>);
             }
@@ -532,7 +532,7 @@ export function register(platform) {
             if (templateMatches.length) {
                 const libOf = (m) => {
                     const sep = m.location.indexOf(' > ');
-                    return sep > 0 ? m.location.slice(0, sep) : '(No Library)';
+                    return sep > 0 ? m.location.slice(0, sep) : '（无库）';
                 };
                 const tmplOf = (m) => {
                     const sep = m.location.indexOf(' > ');
@@ -552,7 +552,7 @@ export function register(platform) {
                 }
                 panels.push(
                     <div className="panel" key="templates">
-                        <div className="panel-header">{'Code Templates — ' + templateMatches.length + ' matches'}</div>
+                        <div className="panel-header">{'代码模板 — ' + templateMatches.length + ' 个匹配'}</div>
                         <div className="panel-body">{groups}</div>
                     </div>);
             }
@@ -568,13 +568,13 @@ export function register(platform) {
                 }
                 panels.push(
                     <div className="panel" key="scripts">
-                        <div className="panel-header">{'Global Scripts — ' + scriptMatches.length + ' matches'}</div>
+                        <div className="panel-header">{'全局脚本 — ' + scriptMatches.length + ' 个匹配'}</div>
                         <div className="panel-body">{groups}</div>
                     </div>);
             }
 
             if (!matches.length) {
-                panels.push(<div className="hint" key="empty">No matches found.</div>);
+                panels.push(<div className="hint" key="empty">未找到匹配项。</div>);
             }
 
             return <>{panels}</>;
@@ -586,7 +586,7 @@ export function register(platform) {
 
         return (
             <div className="view">
-                <div className="taskbar" data-pane-title="Source Code Search Tasks">
+                <div className="taskbar" data-pane-title="源码搜索任务">
                     <TaskBtn label="Search" icon="search" primary disabled={searching} onClick={performSearch} />
                     <span className="sep" />
                     <TaskBtn label="Export JSON" icon="export" disabled={exportDisabled} onClick={exportJson} />
@@ -595,24 +595,24 @@ export function register(platform) {
                 <div className="view-body">
                     {notInstalledStatus !== null && (
                         <div className="panel">
-                            <div className="panel-header">Status</div>
+                            <div className="panel-header">状态</div>
                             <div className="panel-body">
                                 <div className="hint">
-                                    {'The OIE Source Code Search engine plugin is not installed on this engine ('
-                                        + EXT + ' answered ' + notInstalledStatus + '). Install the oie-source-code-search '
-                                        + 'extension and restart the engine.'}
+                                    {'此引擎上未安装 OIE 源码搜索引擎插件（'
+                                        + EXT + ' 返回 ' + notInstalledStatus + '）。请安装 oie-source-code-search '
+                                        + ' 扩展并重启引擎。'}
                                 </div>
                             </div>
                         </div>
                     )}
 
                     <div className="panel">
-                        <div className="panel-header">Search</div>
+                        <div className="panel-header">搜索</div>
                         <div className="panel-body">
                             <div className="field">
-                                <label>Search For</label>
+                                <label>搜索内容</label>
                                 <input type="text" ref={queryInputRef}
-                                    placeholder="Text or regular expression"
+                                    placeholder="文本或正则表达式"
                                     className="w-[420px]"
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
@@ -620,11 +620,11 @@ export function register(platform) {
                             </div>
 
                             <div className="field">
-                                <label>Match</label>
+                                <label>匹配方式</label>
                                 <div className="flex flex-wrap gap-y-[4px] gap-x-[18px] items-center">
                                     <select value={mode} onChange={(e) => setMode(e.target.value)}>
-                                        <option value="literal">Literal</option>
-                                        <option value="regex">Regular Expression (Java)</option>
+                                        <option value="literal">文本匹配</option>
+                                        <option value="regex">正则表达式（Java）</option>
                                     </select>
                                     <label className="check">
                                         <input type="checkbox" checked={caseSensitive}
@@ -640,7 +640,7 @@ export function register(platform) {
                             </div>
 
                             <div className="field">
-                                <label>Search In</label>
+                                <label>搜索范围</label>
                                 <div className="flex flex-wrap gap-y-[4px] gap-x-[18px] items-center">
                                     <label className="check">
                                         <input type="checkbox" checked={searchChannels}
@@ -671,27 +671,27 @@ export function register(platform) {
                             </div>
 
                             <div className="field">
-                                <label>Channel Scope</label>
+                                <label>通道范围</label>
                                 <div>
                                     <select value={scope} onChange={(e) => onScopeChange(e.target.value)}>
-                                        <option value="all">All Channels</option>
-                                        <option value="selected">Selected Channels</option>
+                                        <option value="all">所有通道</option>
+                                        <option value="selected">所选通道</option>
                                     </select>
                                     <div className="max-h-[240px] overflow-auto min-w-[320px] max-w-[860px] border border-line rounded-[3px] mt-[6px]" style={{ display: scope === 'selected' ? '' : 'none' }}>
                                         {channels === null ? (
-                                            <div className="hint py-[6px] px-[10px]">Loading channels…</div>
+                                            <div className="hint py-[6px] px-[10px]">正在加载通道…</div>
                                         ) : !channels.length ? (
-                                            <div className="hint py-[6px] px-[10px]">No channels available</div>
+                                            <div className="hint py-[6px] px-[10px]">无可用通道</div>
                                         ) : (
                                             <table className="w-full text-[12px] border-collapse">
                                                 <thead>
                                                     <tr className="border-b border-line">
                                                         <th className="w-[28px] py-[4px] px-[8px]"></th>
-                                                        <ChTh col="enabled" label="Status" />
-                                                        <ChTh col="dataType" label="Data Type" />
-                                                        <ChTh col="name" label="Name" />
-                                                        <ChTh col="id" label="Id" />
-                                                        <ChTh col="description" label="Description" />
+                                                        <ChTh col="enabled" label="状态" />
+                                                        <ChTh col="dataType" label="数据类型" />
+                                                        <ChTh col="name" label="名称" />
+                                                        <ChTh col="id" label="ID" />
+                                                        <ChTh col="description" label="描述" />
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -704,7 +704,7 @@ export function register(platform) {
                                                                     onClick={(e) => e.stopPropagation()}
                                                                     onChange={(e) => toggleChannel(ch.id, e.target.checked)} />
                                                             </td>
-                                                            <td className="py-[3px] px-[8px] whitespace-nowrap">{ch.enabled ? 'Enabled' : 'Disabled'}</td>
+                                                            <td className="py-[3px] px-[8px] whitespace-nowrap">{ch.enabled ? '已启用' : '已禁用'}</td>
                                                             <td className="py-[3px] px-[8px] whitespace-nowrap">{ch.dataType}</td>
                                                             <td className="py-[3px] px-[8px]">{ch.name}</td>
                                                             <td className="py-[3px] px-[8px] font-mono text-[11px] whitespace-nowrap">{ch.id}</td>
@@ -718,7 +718,7 @@ export function register(platform) {
                                     </div>
                                 </div>
                                 <div className="hint">
-                                    Limits which channels are searched for channel scripts, message templates, and connector properties
+                                    限定通道脚本、消息模板和连接器属性的搜索范围
                                 </div>
                             </div>
                         </div>
@@ -726,7 +726,7 @@ export function register(platform) {
 
                     <div className="panel">
                         <div className="panel-header">
-                            {'Results — '}
+                            {'结果 — '}
                             <span className="text-text-faint">{status}</span>
                         </div>
                         <div className="panel-body">
@@ -752,11 +752,11 @@ export function register(platform) {
 
     platform.registerNavItem({
         id: 'source-code-search',
-        label: 'Source Code Search',
+        label: '源码搜索',
         icon: 'search',
         path: '/source-code-search',
         section: 'Plugins',
         order: 40
     });
-    platform.registerView('/source-code-search', platform.reactView(SourceCodeSearchView), { title: 'Source Code Search' });
+    platform.registerView('/source-code-search', platform.reactView(SourceCodeSearchView), { title: '源码搜索' });
 }
