@@ -1,6 +1,6 @@
 # OIE 源码搜索
 
-[![build](https://github.com/diridium-com/oie-source-code-search/actions/workflows/build.yml/badge.svg)](https://github.com/diridium-com/oie-source-code-search/actions/workflows/build.yml) [![release](https://img.shields.io/github/v/release/diridium-com/oie-source-code-search?label=release&color=blue)](https://github.com/diridium-com/oie-source-code-search/releases/latest) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-green.svg)](LICENSE) ![Java](https://img.shields.io/badge/Java-17%2B-blue.svg) [![OIE](https://img.shields.io/badge/OIE-4.6.0-blue.svg)](https://www.openintegrationengine.org/)
+[![build](https://github.com/diridium-com/oie-source-code-search/actions/workflows/build.yml/badge.svg)](https://github.com/diridium-com/oie-source-code-search/actions/workflows/build.yml) [![release](https://img.shields.io/github/v/release/diridium-com/oie-source-code-search?label=release&color=blue)](https://github.com/diridium-com/oie-source-code-search/releases/latest) [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-green.svg)](LICENSE) ![Java](https://img.shields.io/badge/Java-17%2B-blue.svg) [![OIE](https://img.shields.io/badge/OIE-4.7.0-blue.svg)](https://www.openintegrationengine.org/)
 
 一个 [Open Integration Engine](https://www.openintegrationengine.org/)（OIE）插件，提供类似 grep 的搜索功能，可搜索所有通道脚本、代码模板、全局脚本和消息模板 — 直接在管理界面中使用。
 
@@ -49,8 +49,10 @@
 
 |属性|值|
 |-----------|-------|
-| OIE 版本 | 4.6.0+ |
+| OIE 版本 | 4.7.0 |
 | Java | 17+ |
+
+正在使用 OIE 4.6.0？请使用 [oie-source-code-search 1.4.1](https://github.com/diridium-com/oie-source-code-search/releases/tag/v1.4.1)。
 
 ## 安装
 
@@ -63,7 +65,7 @@
 mvn verify
 ```
 
-The script installs `mirth-server`, `donkey-server`, `mirth-client-core`, and `mirth-client` into your local Maven repository, taken from the published OIE release matching the POM's `mc.version` and checked against that release's `sha256sums`. Run it once per engine version.
+该脚本将 `mirth-server`、`donkey-server`、`mirth-client-core` 和 `mirth-client` 安装到本地 Maven 仓库，取自与 POM 的 `mc.version` 匹配的已发布 OIE 版本，并对照 POM 中固定的 SHA-256 校验值（`oie.dist.sha256`）进行校验；CI 运行相同的脚本。每个引擎版本运行一次即可。
 
 ## 许可证
 

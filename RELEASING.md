@@ -10,11 +10,11 @@ Every release is signed. CI builds an unsigned draft, the signed build is made w
 Change all of these in the commit you tag:
 
 - `<revision>` in the parent `pom.xml`
-- `version` in `oie.json` (the release workflow fails if it does not match the tag)
+- `version` in `oie.json`
 - `version` in `package/webadmin/plugin.json`
 - `version` in `package/webadmin/package.json`, and the two root entries in `package/webadmin/package-lock.json`
 
-CI stamps the tag into the build on its own, but the signed build is made from the committed files, so they have to agree.
+The release workflow fails if any of them does not match the tag, or if `oie.json`'s `minEngineVersion` and `maxEngineVersion` differ from the POM's `plugin.supported.mc.versions`, the only engine version the plugin loads on. CI and the signed build both build the committed files as they are.
 
 ## 2. Tag
 
@@ -22,17 +22,21 @@ CI stamps the tag into the build on its own, but the signed build is made from t
 git tag vX.Y.Z && git push origin vX.Y.Z
 ```
 
-`.github/workflows/release.yml` builds against the OIE distribution matching the POM's `mc.version` and stages a **draft** release holding the unsigned `oie-source-code-search-X.Y.Z.zip` and its `.sha256` sidecar. CI never publishes it.
+`.github/workflows/release.yml` builds and tests against the OIE distribution matching the POM's `mc.version` and stages a **draft** release holding the unsigned `oie-source-code-search-X.Y.Z.zip` and its `.sha256` sidecar. CI never publishes it. The build and tests run in a job whose token can only read the repository; a second job, the only one that can write, downloads the zip and creates or updates the draft.
 
 ## 3. Build the signed zip
 
 Check out the tag on the machine with the YubiKey. If its local Maven repository does not have the engine jars for this `mc.version` yet, run `./scripts/install-engine-jars.sh` first. The `signing` profile also needs `yubikey-pkcs11.cfg` and `certchain.pem` in the repo root; both are gitignored. From the repo root:
 
 ```bash
-mvn clean package -Psigning -Dsigning.storepass=<yubikey-pin>
+read -rs PIN
+mvn clean package -Psigning -Dsigning.storepass="$PIN"
+unset PIN
 ```
 
-Copy `package/target/oie-source-code-search-X.Y.Z.zip` somewhere safe right away. A later `mvn clean` deletes it, and it cannot be rebuilt without the key.
+`read -s` takes the PIN without echoing it or leaving it in your shell history. The variable isn't exported, so only Maven gets the PIN, not the processes the build starts (npm, and the install scripts it runs).
+
+The signed zip is `package/target/oie-source-code-search-X.Y.Z.zip`. Run the commands below and in step 4 from `package/target/`.
 
 Check every jar before it goes anywhere. Each must print `jar verified.` and exit 0:
 

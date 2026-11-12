@@ -8,9 +8,9 @@
         "web",
         "swing"
     ],
-    "version": "1.4.1",
-    "minEngineVersion": "4.6.0",
-    "maxEngineVersion": null,
+    "version": "1.5.0",
+    "minEngineVersion": "4.7.0",
+    "maxEngineVersion": "4.7.0",
     "filename": "oie-source-code-search-{version}.zip",
     "restartRequired": true,
     "homepage": "https://github.com/diridium-com/oie-source-code-search",
