@@ -3,12 +3,12 @@
 <!-- Copyright (c) 2025-2026 Diridium Technologies Inc. -->
 
 <pluginMetaData path="oie-source-code-search">
-    <name>OIE Source Code Search</name>
+    <name>源码搜索</name>
     <author>Diridium Technologies Inc.</author>
     <pluginVersion>${project.version}</pluginVersion>
     <mirthVersion>${plugin.supported.mc.versions}</mirthVersion>
     <url>https://diridium.com</url>
-    <description>Search across all channel scripts, code templates, and global scripts for arbitrary strings.</description>
+    <description>在所有通道脚本、代码模板和全局脚本中搜索任意字符串。</description>
 
     <clientClasses>
         <string>com.diridium.sourcecodesearch.SourceCodeSearchPlugin</string>
